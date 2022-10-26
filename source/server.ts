@@ -3,10 +3,21 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logging from './config/logging';
 import config from './config/config';
-import sampleRoutes from './routes/sample';
+import bookRoutes from './routes/book';
+import emailRoutes from './routes/api/sendEmail';
+import mongoose from 'mongoose';
 
 const NAMESPACE = 'Server';
 const router = express();
+
+/** Connect to Mongo */
+mongoose.connect(config.mongo.url, config.mongo.options)
+.then((result) => {
+    logging.info(NAMESPACE, "Connected to mongoDB!");
+})
+.catch((error) => {
+    logging.error(NAMESPACE, error.message, error);
+});
 
 /** Logging the request */
 router.use((req, res, next) => {
@@ -27,17 +38,16 @@ router.use(bodyParser.json());
 router.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Typed, Accept, Authorization');
-
     if (req.method == 'OPTIONS') {
         res.header('Access-Control-Allow-Origin', 'GET PATCH DELETE POST PUT');
         return res.status(200).json({});
     }
-
     next();
 });
 
 /** Routes */
-router.use('/sample', sampleRoutes);
+router.use('/api', emailRoutes);
+
 
 /** Error Handling */
 router.use((req, res, next) => {
