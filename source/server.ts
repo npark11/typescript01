@@ -12,7 +12,7 @@ const NAMESPACE = 'Server';
 const router = express();
 
 /** Connect to Mongo */
-mongoose.connect(config.mongo.url, config.mongo.options)
+mongoose.connect(config.mongo.url, { retryWrites: true, w: 'majority'})
 .then((result) => {
     logging.info(NAMESPACE, 'Connected to MongoDB!');
 })
@@ -62,7 +62,7 @@ router.use((req, res, next) => {
 
 /** Create the Server */
 const httpServer = http.createServer(router);
-httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server running on ${config.server.hostname}:${config.server.port}`));
+httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server running on :${config.server.port}`));
 
 /**  */
 /**  */
