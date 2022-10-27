@@ -1,13 +1,24 @@
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 import logging from './config/logging';
 import config from './config/config';
-import bookRoutes from './routes/book';
+//import bookRoutes from './routes/book';
 import userRoutes from './routes/user';
+
 
 const NAMESPACE = 'Server';
 const router = express();
+
+/** Connect to Mongo */
+mongoose.connect(config.mongo.url, config.mongo.options)
+.then((result) => {
+    logging.info(NAMESPACE, 'Connected to MongoDB!');
+})
+.catch((error) => {
+    logging.error(NAMESPACE, error.message, error);
+})
 
 /** Logging the request */
 router.use((req, res, next) => {
