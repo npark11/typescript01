@@ -12,7 +12,10 @@ const router = express();
 
 /** Connect to Mongo */
 mongoose
-    .connect(config.mongo.url, { retryWrites: true, w: 'majority' })
+    .connect(config.mongo.url, {
+        retryWrites: true,
+        w: 'majority'
+    })
     .then((result) => {
         logging.info(NAMESPACE, 'Connected to MongoDB!');
     })
