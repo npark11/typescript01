@@ -3,21 +3,22 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logging from './config/logging';
 import config from './config/config';
-import bookRoutes from './routes/book';
-import emailRoutes from './routes/api/sendEmail';
+//import bookRoutes from './routes/book';
+import userRoutes from './routes/user';
 import mongoose from 'mongoose';
 
 const NAMESPACE = 'Server';
 const router = express();
 
 /** Connect to Mongo */
-mongoose.connect(config.mongo.url, config.mongo.options)
-.then((result) => {
-    logging.info(NAMESPACE, "Connected to mongoDB!");
-})
-.catch((error) => {
-    logging.error(NAMESPACE, error.message, error);
-});
+mongoose
+    .connect(config.mongo.url, { retryWrites: true, w: 'majority' })
+    .then((result) => {
+        logging.info(NAMESPACE, 'Connected to MongoDB!');
+    })
+    .catch((error) => {
+        logging.error(NAMESPACE, error.message, error);
+    });
 
 /** Logging the request */
 router.use((req, res, next) => {
@@ -46,7 +47,7 @@ router.use((req, res, next) => {
 });
 
 /** Routes */
-router.use('/api', emailRoutes);
+router.use('/users', userRoutes);
 
 
 /** Error Handling */
@@ -60,7 +61,7 @@ router.use((req, res, next) => {
 
 /** Create the Server */
 const httpServer = http.createServer(router);
-httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server running on ${config.server.hostname}:${config.server.port}`));
+httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server running on :${config.server.port}`));
 
 /**  */
 /**  */
